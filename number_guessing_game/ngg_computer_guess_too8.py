@@ -1,33 +1,29 @@
 import random
-invalid_number_warning = "You must choose a WHOLE number."
 computer_score = 0
 player_score = 0
-def validated_number_input(prompt, invalid_number_warning_param):
+def validated_number_input(prompt):
     while True:
         try:
             number = int(input(prompt)) 
             return number
         except:
-            print(invalid_number_warning_param)
+            print("You must enter a WHOLE number.")
 
 while True:
-    high_number = validated_number_input("What is the high number?", invalid_number_warning)
+    high_number = validated_number_input("What is the high number?")
     while True:
-        try:
-            low_number = validated_number_input("What is the low number?", invalid_number_warning)
-            if low_number >= high_number:
-                print("The low number cannot be higher than the high number")
-            else:
-                break
-        except:
-            print(invalid_number_warning)
+        low_number = validated_number_input("What is the low number?")
+        if low_number >= high_number:
+            print("The low number cannot be higher than the high number")
+        else:
+            break
 
     #human guesses
     computer_number = random.randint(low_number,high_number)
     human_attempts = 0
     player_guess = 0
     while True: 
-        player_guess = validated_number_input("Choose a number:" if human_attempts == 0 else "Try again:", invalid_number_warning)  
+        player_guess = validated_number_input("Choose a number:" if human_attempts == 0 else "Try again:")  
         if player_guess < low_number or player_guess > high_number:
             print(f"You have to guess between {low_number} - {high_number}, choose again")
             continue
