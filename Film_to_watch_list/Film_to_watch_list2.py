@@ -1,4 +1,5 @@
 import csv
+import json
 film_list = []
 
 def add_film_to_list():
@@ -43,21 +44,43 @@ def view_film_list(film_list_type):
         if  film_list_type is "All" or film["Status"] == film_list_type:
             print(f"{i}. {film['film']} - {film['Status']} - {film['rating']}")
 
-def save_film_list():
+def save_film_list_as_csv():
     with open('film_list.csv', mode='w', newline='') as file:
         my_writer = csv.writer(file, delimiter='\t')
         for film in film_list:
             my_writer.writerow([film['film'], film['Status'], film['rating']])
-    print("Film list saved.")
+    print("Film list saved as CSV")
+
+def save_film_list_as_json():
+    with open('film_list.json', mode='w') as file:
+        json.dump(film_list, file)
+    print('Film List saved as JSON.')
+
+def save_film_list():
+    save_option = input("Save film as CSV (C) or JSON (J)?").upper()
+    if save_option == "C":
+        save_film_list_as_csv
+    elif save_option == "J":
+        save_film_list_as_json
+    else:
+        print("invalid option, please enter either (C) or (J)")
 
 
 def load_film_list():
     try:
-        with open('film_list.csv', mode='r') as file:
-            reader = csv.reader(file, delimiter='\t')
-            for row in reader:
-                film_list.append({'film': row[0], 'Status': row[1], 'rating': row[2]})
-        print("Film list loaded.")
+        load_option = input("Load film list from CSV (C) or JSON (J)? ").upper()
+        if load_option == 'C':
+            with open('film_list.csv', mode='r') as file:
+                reader = csv.reader(file, delimiter='\t')
+                for row in reader:
+                    film_list.append({'film': row[0], 'Status': row[1], 'rating': row[2]})
+            print("Film list loaded from CSV.")
+        elif load_option == 'J':
+            with open('film_list.json', mode='r') as file:
+                film_list.extend(json.load(file))
+            print("Film list loaded from JSON.")
+        else:
+            print("Invalid option. No film list loaded.")
     except FileNotFoundError:
         print("No saved film list found.")
 
