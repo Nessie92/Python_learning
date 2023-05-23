@@ -1,11 +1,37 @@
 import csv
 import json
+import requests
 film_list = []
 
 def add_film_to_list():
     film = input("Enter the name of a film: ")
-    film_list.append({"film": film, "Status": "Unwatched", "rating": "-"}) 
-    print("film added to list")
+    film_info = get_film_info(film)
+    if film_info:
+        film_list.append(film_info)
+        print("Film added to list")
+    else:
+        print("Failed to retrieve film information")
+
+def get_film_info(film):
+    api_key = "4213cac3"
+    url = f"http://www.omdbapi.com/?apikey={api_key}&t={film}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        film_info = {
+            "film": data.get("Title", ""),
+            "Status": "Unwatched",
+            "rating": "-",
+            "genre": data.get("Genre", ""),
+            "imdb_rating": data.get("imdbRating", ""),
+            "description": data.get("Plot", ""),
+            "actors": data.get("Actors", ""),
+            "director": data.get("Director", "")
+        }
+        return film_info
+    else:
+        return None
+
 
 def edit_film_list():
     view_film_list("All")
@@ -37,12 +63,19 @@ def edit_score():
 
 
 def view_film_list(film_list_type):
-
     print("\n" + film_list_type + " Films")
     
     for i, film in enumerate(film_list):
-        if  film_list_type is "All" or film["Status"] == film_list_type:
-            print(f"{i}. {film['film']} - {film['Status']} - {film['rating']}")
+        if film_list_type == "All" or film["Status"] == film_list_type:
+            print(f"{i}. Film: {film['film']}")
+            print(f"   Status: {film['Status']}")
+            print(f"   Rating: {film['rating']}")
+            print(f"   Genre: {film['genre']}")
+            print(f"   IMDB Rating: {film['imdb_rating']}")
+            print(f"   Description: {film['description']}")
+            print(f"   Actors: {film['actors']}")
+            print(f"   Director: {film['director']}")
+
 
 def save_film_list_as_csv():
     with open('film_list.csv', mode='w', newline='') as file:
@@ -84,7 +117,11 @@ def load_film_list():
     except FileNotFoundError:
         print("No saved film list found.")
 
-#save as a file, using tab as delimiter
+def delete_all_films():
+    global film_list
+    film_list = []
+    print("All films deleted from the list.")
+
 load_film_list()
 while True:
 
@@ -98,7 +135,8 @@ while True:
 7. view unwatched film list 
 8. view watched film list 
 9. save list
-10. quit''')
+10. delete all film list
+11. quit''')
 
     choice = input("enter your choice: ")
 
@@ -129,8 +167,11 @@ while True:
 
         case "9":
             save_film_list()
-            
+
         case "10":
+            delete_all_films()   
+             
+        case "11":
             want_save = input("Do you to save your changes? (y/n)")
             if want_save.lower() == "y":
                 save_film_list()
