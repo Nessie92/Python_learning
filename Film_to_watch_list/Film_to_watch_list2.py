@@ -20,18 +20,18 @@ def get_film_info(film):
         data = response.json()
         film_info = {
             "film": data.get("Title", ""),
+            "Released": data.get("Released", ""),
             "Status": "Unwatched",
             "rating": "-",
             "genre": data.get("Genre", ""),
             "imdb_rating": data.get("imdbRating", ""),
             "description": data.get("Plot", ""),
             "actors": data.get("Actors", ""),
-            "director": data.get("Director", "")
+            "director": data.get("Director", ""),
         }
         return film_info
     else:
         return None
-
 
 def edit_film_list():
     view_film_list("All")
@@ -48,11 +48,11 @@ def delete_film():
 
 def mark_film_watched():
     view_film_list("All")
-    film_index = int(input("Enter the index of the film you wish to mark as watched: "))  
-    film_score = input("give the film a score from 0 (the lowest) to 10 (the highest), if unsure mark as '-' for now: ")
+    film_index = int(input("Enter the index of the film you wish to mark as watched: "))
+    film_score = input("Give the film a score from 0 (the lowest) to 10 (the highest). If unsure, mark as '-' for now: ")
     film_list[film_index]["Status"] = "Watched"
     film_list[film_index]["rating"] = film_score
-    print("film marked as watched and score given")
+    print("Film marked as watched, and score added.")
 
 def edit_score():
     view_film_list("All")
@@ -61,13 +61,13 @@ def edit_score():
     film_list[film_index]["rating"] = new_score
     print("film score edited")
 
-
 def view_film_list(film_list_type):
     print("\n" + film_list_type + " Films")
-    
+
     for i, film in enumerate(film_list):
         if film_list_type == "All" or film["Status"] == film_list_type:
             print(f"{i}. Film: {film['film']}")
+            print(f"   Released: {film['Released']}")
             print(f"   Status: {film['Status']}")
             print(f"   Rating: {film['rating']}")
             print(f"   Genre: {film['genre']}")
@@ -75,7 +75,6 @@ def view_film_list(film_list_type):
             print(f"   Description: {film['description']}")
             print(f"   Actors: {film['actors']}")
             print(f"   Director: {film['director']}")
-
 
 def save_film_list_as_csv():
     with open('film_list.csv', mode='w', newline='') as file:
@@ -92,12 +91,11 @@ def save_film_list_as_json():
 def save_film_list():
     save_option = input("Save film as CSV (C) or JSON (J)?").upper()
     if save_option == "C":
-        save_film_list_as_csv
+        save_film_list_as_csv()
     elif save_option == "J":
-        save_film_list_as_json
+        save_film_list_as_json()
     else:
         print("invalid option, please enter either (C) or (J)")
-
 
 def load_film_list():
     try:
@@ -106,7 +104,11 @@ def load_film_list():
             with open('film_list.csv', mode='r') as file:
                 reader = csv.reader(file, delimiter='\t')
                 for row in reader:
-                    film_list.append({'film': row[0], 'Status': row[1], 'rating': row[2]})
+                    film_list.append({
+                        'film': row[0],
+                        'Status': row[1],
+                        'rating': row[2],
+                    })
             print("Film list loaded from CSV.")
         elif load_option == 'J':
             with open('film_list.json', mode='r') as file:
@@ -183,4 +185,3 @@ while True:
             
         case _:
             print("invalid choice, please try again!")
-
